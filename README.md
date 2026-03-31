@@ -6,13 +6,9 @@
 
 Traffic Monitor 是一个 Windows 本地流量监控小组件，基于 Electron + React + TypeScript。
 
-下载入口：
-- Releases: `https://github.com/Brecloud/traffic-monitor/releases`
-- 最新版本：`https://github.com/Brecloud/traffic-monitor/releases/latest`
-
 ### 功能
 
-- 每 10 秒采集一次应用流量（稳定统计口径，Windows attributed usage）。
+- 每 10 秒采集一次应用流量，采用稳定统计口径（Windows attributed usage）。
 - 每分钟本地持久化（JSONL），支持历史聚合。
 - 支持四个时间维度：今日、昨日、本周（周一开始）、本月。
 - Top-N 应用列表，支持搜索和排序（总量/下载/上传）。
@@ -62,17 +58,23 @@ npm run package:win
 npm run release:check
 ```
 
-详细流程见：`docs/release-workflow.md`
+详细流程见：[docs/release-workflow.md](docs/release-workflow.md)
+
+### 系统兼容性
+
+- 当前发布包面向 Windows 10 / Windows 11 64 位系统（x64）。
+- 目前不提供 Windows 7 / 8 / 8.1 或 32 位版本支持。
+
+### 下载入口
+
+- [Releases 页面](https://github.com/Brecloud/traffic-monitor/releases)
+- [最新版本](https://github.com/Brecloud/traffic-monitor/releases/latest)
 
 ---
 
 ## English
 
 Traffic Monitor is a local Windows traffic monitor widget built with Electron + React + TypeScript.
-
-Download:
-- Releases: `https://github.com/Brecloud/traffic-monitor/releases`
-- Latest release: `https://github.com/Brecloud/traffic-monitor/releases/latest`
 
 ### Features
 
@@ -126,7 +128,17 @@ Release preflight:
 npm run release:check
 ```
 
-Detailed workflow: `docs/release-workflow.md`
+Detailed workflow: [docs/release-workflow.md](docs/release-workflow.md)
+
+### Compatibility
+
+- The current release targets Windows 10 / Windows 11 x64.
+- Windows 7 / 8 / 8.1 and 32-bit builds are not supported at this time.
+
+### Download Links
+
+- [Releases page](https://github.com/Brecloud/traffic-monitor/releases)
+- [Latest release](https://github.com/Brecloud/traffic-monitor/releases/latest)
 
 ## Data Locations
 
