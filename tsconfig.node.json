@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["node", "vitest/globals"],
+    "composite": true,
+    "outDir": "dist-electron"
+  },
+  "include": ["vite.config.ts", "src/main", "src/preload", "src/shared", "vitest.config.ts"]
+}

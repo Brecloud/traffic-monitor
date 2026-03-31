@@ -1,0 +1,7 @@
+﻿node_modules
+dist-renderer
+dist-electron
+release
+*.log
+*.tsbuildinfo
+.temp
