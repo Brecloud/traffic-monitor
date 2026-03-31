@@ -1,7 +1,20 @@
-﻿node_modules
-dist-renderer
-dist-electron
-release
-*.log
+node_modules/
+
+# Build outputs
+dist-renderer/
+dist-electron/
+release/
+coverage/
+
+# Local installed packages and archives
+installed/
+v1.0/
+
+# TypeScript / tooling caches
 *.tsbuildinfo
-.temp
+.temp/
+
+# Logs and local machine noise
+*.log
+Thumbs.db
+.DS_Store

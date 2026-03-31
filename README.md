@@ -36,6 +36,22 @@ npm run package:win
 
 打包输出目录：`release/`
 
+### 版本发布与仓库管理
+
+- 仓库只保留源码、文档和脚本。
+- Windows 安装包通过 GitHub Releases 分发。
+- 不提交 `dist-*`、`release/`、`installed/`、本地版本归档。
+- 使用 `main` + 短分支，例如 `feature/...`、`fix/...`、`release/...`。
+- 开发中的发布说明统一写在 `CHANGELOG.md` 的 `Unreleased`。
+
+发布前检查：
+
+```bash
+npm run release:check
+```
+
+详细流程见：`docs/release-workflow.md`
+
 ---
 
 ## English
@@ -73,6 +89,22 @@ npm run package:win
 ```
 
 Package output directory: `release/`
+
+### Release and Repo Hygiene
+
+- Keep the repo for source code, docs, and scripts.
+- Publish Windows packages through GitHub Releases.
+- Do not commit `dist-*`, `release/`, `installed/`, or local version archives.
+- Use `main` plus short-lived branches such as `feature/...`, `fix/...`, and `release/...`.
+- Track upcoming release notes in the `Unreleased` section of `CHANGELOG.md`.
+
+Release preflight:
+
+```bash
+npm run release:check
+```
+
+Detailed workflow: `docs/release-workflow.md`
 
 ## Data Locations
 
