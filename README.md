@@ -1,8 +1,14 @@
-﻿# Traffic Monitor
+# Traffic Monitor
+
+[中文](#中文说明) | [English](#english)
 
 ## 中文说明
 
 Traffic Monitor 是一个 Windows 本地流量监控小组件，基于 Electron + React + TypeScript。
+
+下载入口：
+- Releases: `https://github.com/Brecloud/traffic-monitor/releases`
+- 最新版本：`https://github.com/Brecloud/traffic-monitor/releases/latest`
 
 ### 功能
 
@@ -36,6 +42,12 @@ npm run package:win
 
 打包输出目录：`release/`
 
+### 下载与使用
+
+- 普通用户请直接从 GitHub Releases 下载 zip，不需要进入源码目录。
+- 解压后运行 `Traffic Monitor.exe` 即可。
+- 当前发布形态为 Windows 便携版 zip。
+
 ### 版本发布与仓库管理
 
 - 仓库只保留源码、文档和脚本。
@@ -57,6 +69,10 @@ npm run release:check
 ## English
 
 Traffic Monitor is a local Windows traffic monitor widget built with Electron + React + TypeScript.
+
+Download:
+- Releases: `https://github.com/Brecloud/traffic-monitor/releases`
+- Latest release: `https://github.com/Brecloud/traffic-monitor/releases/latest`
 
 ### Features
 
@@ -89,6 +105,12 @@ npm run package:win
 ```
 
 Package output directory: `release/`
+
+### Download and Use
+
+- End users should download the zip from GitHub Releases instead of browsing the source tree.
+- Extract the archive and run `Traffic Monitor.exe`.
+- The current distribution format is a Windows portable zip.
 
 ### Release and Repo Hygiene
 
