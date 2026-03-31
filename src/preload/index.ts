@@ -16,6 +16,11 @@ const api = {
     const wrapped = () => listener();
     ipcRenderer.on(IPC_CHANNELS.dataUpdated, wrapped);
     return () => ipcRenderer.off(IPC_CHANNELS.dataUpdated, wrapped);
+  },
+  onAlertClicked: (listener: (payload: { appName?: string }) => void): (() => void) => {
+    const wrapped = (_event: unknown, payload: { appName?: string }) => listener(payload);
+    ipcRenderer.on(IPC_CHANNELS.alertClicked, wrapped);
+    return () => ipcRenderer.off(IPC_CHANNELS.alertClicked, wrapped);
   }
 };
 

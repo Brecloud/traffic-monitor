@@ -7,7 +7,8 @@ import {
   Menu,
   Tray,
   nativeImage,
-  shell
+  shell,
+  Notification
 } from "electron";
 import type { AppSettings, UsageQuery } from "../shared/types";
 import { IPC_CHANNELS, DEFAULT_SETTINGS } from "../shared/constants";
@@ -16,12 +17,16 @@ import { SampleRepository } from "./services/sampleRepository";
 import { WindowsTrafficProbe } from "./services/windowsTrafficProbe";
 import { CollectorService } from "./services/collectorService";
 import { AggregationService } from "./services/aggregationService";
+import { AlertEngine } from "./services/alertEngine";
 import { rangeUsageToCsv } from "./services/csvExport";
+import { resolveIconAssets, type IconAssets } from "./services/iconResolver";
+import { buildAlertClickPayload } from "./services/alertPayload";
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let trayMenuBuilder: (() => Menu) | null = null;
 let isQuitting = false;
+let iconAssets: IconAssets | null = null;
 
 const dataDir = path.join(app.getPath("userData"), "traffic-monitor-data");
 const repository = new SampleRepository(dataDir);
@@ -32,6 +37,11 @@ const collector = new CollectorService(probe, repository, {
   retentionDays: DEFAULT_SETTINGS.retentionDays
 });
 const aggregation = new AggregationService(repository, () => collector.getLiveSamples());
+const alertEngine = new AlertEngine();
+
+if (process.platform === "win32") {
+  app.setAppUserModelId("com.brecloud.trafficmonitor");
+}
 
 function getText(key: Parameters<typeof t>[1]): string {
   const locale = repository.getSettings().locale;
@@ -81,14 +91,16 @@ function refreshTrayPresentation(): void {
   tray.setContextMenu(trayMenuBuilder());
 }
 
-function createTray(window: BrowserWindow): Tray {
-  const icon = nativeImage
-    .createFromDataURL(
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAQklEQVR4AWP4z0AEMMDEwMDA+P//PwMDAwPjP4P///8ZGBhYwQxGKgNwGAsGg2A0GJgYGRiY6A9mBoYGBiYmBgYAAAG9cwV7n0ANKwAAAABJRU5ErkJggg=="
-    )
-    .resize({ width: 16, height: 16 });
+function createTray(window: BrowserWindow): Tray | null {
+  const trayIconPath = iconAssets?.trayIconPath ?? iconAssets?.notificationIconPath ?? "";
+  const icon = nativeImage.createFromPath(trayIconPath);
+  if (icon.isEmpty()) {
+    console.warn("Tray icon is missing. Running without tray icon.");
+    return null;
+  }
+  const trayImage = icon.resize({ width: 16, height: 16 });
 
-  const trayInstance = new Tray(icon);
+  const trayInstance = new Tray(trayImage);
 
   const buildContextMenu = () =>
     Menu.buildFromTemplate([
@@ -150,6 +162,44 @@ function createTray(window: BrowserWindow): Tray {
 
 function notifyRendererDataUpdated(): void {
   mainWindow?.webContents.send(IPC_CHANNELS.dataUpdated, { at: new Date().toISOString() });
+}
+
+function handleAlerts(atIso: string, deltas: Array<{ appId: string; appName: string; rxBytes: number; txBytes: number; timestamp: string }>): void {
+  const settings = repository.getSettings();
+  if (!settings.alertsEnabled) {
+    return;
+  }
+
+  const todayView = aggregation.getUsage({ range: "today", sortBy: "total", limit: 9999 });
+  const alerts = alertEngine.evaluate({
+    atIso,
+    locale: settings.locale,
+    settings,
+    todayView,
+    deltas
+  });
+
+  for (const alert of alerts) {
+    const notification = new Notification({
+      title: getText("alert.title"),
+      body: alert.body,
+      icon: iconAssets?.notificationIconPath ?? undefined
+    });
+
+    notification.on("click", () => {
+      if (!mainWindow) {
+        return;
+      }
+      mainWindow.show();
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
+      mainWindow.webContents.send(IPC_CHANNELS.alertClicked, buildAlertClickPayload(alert));
+    });
+
+    notification.show();
+  }
 }
 
 async function applyStartupSetting(settings: AppSettings): Promise<void> {
@@ -226,12 +276,22 @@ async function bootstrap(): Promise<void> {
   }
 
   await repository.init();
+  iconAssets = resolveIconAssets({
+    appPath: app.getAppPath(),
+    resourcesPath: process.resourcesPath,
+    cwdPath: process.cwd()
+  });
   const stored = repository.getSettings();
   await repository.saveSettings({ ...DEFAULT_SETTINGS, ...stored });
   await applyStartupSetting(repository.getSettings());
 
   await collector.init();
-  collector.on("collected", notifyRendererDataUpdated);
+  collector.on("collected", (payload: { at: string; deltas?: Array<{ appId: string; appName: string; rxBytes: number; txBytes: number; timestamp: string }> }) => {
+    if (payload?.deltas && payload.deltas.length > 0) {
+      handleAlerts(payload.at, payload.deltas);
+    }
+    notifyRendererDataUpdated();
+  });
   collector.on("flushed", notifyRendererDataUpdated);
   collector.on("error", (error) => {
     console.error("collector error", error);

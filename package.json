@@ -1,6 +1,6 @@
 {
     "name":  "traffic-monitor",
-    "version":  "1.0.0",
+    "version":  "1.1.0",
     "private":  true,
     "description":  "Windows local traffic monitor widget (Electron + React + TypeScript)",
     "main":  "dist-electron/main/index.js",
@@ -23,9 +23,11 @@
                   "files":  [
                                 "dist-renderer/**",
                                 "dist-electron/**",
+                                "build/icons/**",
                                 "package.json"
                             ],
                   "win":  {
+                              "icon":  "icons/icon.ico",
                               "target":  [
                                              "dir"
                                          ]

@@ -43,6 +43,10 @@ export interface AppSettings {
   topN: number;
   viewMode: ViewMode;
   launchAtStartup: boolean;
+  alertsEnabled: boolean;
+  dailyThresholdGb: number;
+  burstThresholdMb: number;
+  alertCooldownMinutes: number;
   pollIntervalMs: number;
   persistIntervalMs: number;
   retentionDays: number;

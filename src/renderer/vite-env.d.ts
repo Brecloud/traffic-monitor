@@ -12,6 +12,7 @@ declare global {
       minimize(): Promise<void>;
       hide(): Promise<void>;
       onDataUpdated(listener: () => void): () => void;
+      onAlertClicked(listener: (payload: { appName?: string }) => void): () => void;
     };
   }
 }

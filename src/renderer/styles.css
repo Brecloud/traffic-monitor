@@ -162,6 +162,12 @@ select {
   font-size: 12px;
 }
 
+.settings-hint {
+  font-size: 11px;
+  color: #3e6059;
+  line-height: 1.35;
+}
+
 .topn {
   width: 72px !important;
 }

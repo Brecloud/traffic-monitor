@@ -8,6 +8,7 @@ export const IPC_CHANNELS = {
   exportCsv: "traffic:export-csv",
   openDataDir: "traffic:open-data-dir",
   dataUpdated: "traffic:data-updated",
+  alertClicked: "traffic:alert-clicked",
   windowMinimize: "window:minimize",
   windowHide: "window:hide"
 } as const;
@@ -17,6 +18,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   topN: 8,
   viewMode: "detailed",
   launchAtStartup: false,
+  alertsEnabled: true,
+  dailyThresholdGb: 2,
+  burstThresholdMb: 300,
+  alertCooldownMinutes: 15,
   pollIntervalMs: 10_000,
   persistIntervalMs: 60_000,
   retentionDays: 90

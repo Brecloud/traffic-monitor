@@ -70,6 +70,21 @@ export function App(): JSX.Element {
     return unsubscribe;
   }, [loadUsage, query]);
 
+  useEffect(() => {
+    const unsubscribe = window.trafficMonitor.onAlertClicked((payload) => {
+      const appName = payload.appName?.trim();
+      setRange("today");
+      if (appName) {
+        setSearch(appName);
+        setMessage(tr("notice.alertFocused", { app: appName }));
+      } else {
+        setMessage(tr("notice.alertFocusedFallback"));
+      }
+      setTimeout(() => setMessage(""), 4500);
+    });
+    return unsubscribe;
+  }, [tr]);
+
   const onToggleMode = async (): Promise<void> => {
     const nextMode = settings.viewMode === "detailed" ? "compact" : "detailed";
     const updated = await window.trafficMonitor.updateSettings({ viewMode: nextMode });
@@ -86,6 +101,25 @@ export function App(): JSX.Element {
   const onTopNChange = async (value: number): Promise<void> => {
     const safe = Math.max(3, Math.min(30, Math.round(value)));
     const updated = await window.trafficMonitor.updateSettings({ topN: safe });
+    setSettings(updated);
+  };
+
+  const onAlertSwitch = async (): Promise<void> => {
+    const updated = await window.trafficMonitor.updateSettings({
+      alertsEnabled: !settings.alertsEnabled
+    });
+    setSettings(updated);
+  };
+
+  const onAlertNumberChange = async (
+    key: "dailyThresholdGb" | "burstThresholdMb" | "alertCooldownMinutes",
+    value: number
+  ): Promise<void> => {
+    if (!Number.isFinite(value)) {
+      return;
+    }
+    const safe = Math.max(1, Math.round(value * 100) / 100);
+    const updated = await window.trafficMonitor.updateSettings({ [key]: safe });
     setSettings(updated);
   };
 
@@ -182,6 +216,14 @@ export function App(): JSX.Element {
             {tr("setting.launchAtStartup")}
           </label>
           <label>
+            <input
+              type="checkbox"
+              checked={settings.alertsEnabled}
+              onChange={() => void onAlertSwitch()}
+            />
+            {tr("setting.alertsEnabled")}
+          </label>
+          <label>
             {tr("setting.language")}
             <select value={locale} onChange={(event) => void onLocaleChange(event.target.value as Locale)}>
               {SUPPORTED_LOCALES.map((item) => (
@@ -203,6 +245,42 @@ export function App(): JSX.Element {
             />
           </label>
         </div>
+
+        <div className="row settings-row">
+          <label>
+            {tr("setting.dailyThresholdGb")}
+            <input
+              className="topn"
+              type="number"
+              min={1}
+              value={settings.dailyThresholdGb}
+              onChange={(event) => void onAlertNumberChange("dailyThresholdGb", Number(event.target.value || "2"))}
+            />
+          </label>
+          <label>
+            {tr("setting.burstThresholdMb")}
+            <input
+              className="topn"
+              type="number"
+              min={1}
+              value={settings.burstThresholdMb}
+              onChange={(event) => void onAlertNumberChange("burstThresholdMb", Number(event.target.value || "300"))}
+            />
+          </label>
+          <label>
+            {tr("setting.alertCooldownMinutes")}
+            <input
+              className="topn"
+              type="number"
+              min={1}
+              value={settings.alertCooldownMinutes}
+              onChange={(event) =>
+                void onAlertNumberChange("alertCooldownMinutes", Number(event.target.value || "15"))
+              }
+            />
+          </label>
+        </div>
+        <div className="settings-hint">{tr("setting.alertThresholdHint")}</div>
       </section>
 
       {loading ? <div className="loading">{tr("state.loading")}</div> : null}

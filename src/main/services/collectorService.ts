@@ -132,7 +132,7 @@ export class CollectorService extends EventEmitter {
       });
 
       this.mergeIntoMinuteBuffer(deltas);
-      this.emit("collected", { at: end.toISOString(), records: deltas.length });
+      this.emit("collected", { at: end.toISOString(), records: deltas.length, deltas });
     } catch (error) {
       this.emit("error", error);
     } finally {
